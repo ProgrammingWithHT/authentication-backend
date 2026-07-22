@@ -1,98 +1,221 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+<h1>🔐 TOTP-Based Two-Factor Authentication (2FA) Research</h1>
+
+<h2>📌 Overview</h2>
+<p>
+This document summarizes the evaluation of two popular Node.js libraries,
+<strong>Speakeasy</strong> and <strong>otplib</strong>, for implementing
+Time-Based One-Time Password (TOTP) based Two-Factor Authentication (2FA)
+in a NestJS application.
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<hr>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+<h2>1️⃣ Speakeasy</h2>
+
+<h3>Description</h3>
+<p>
+Speakeasy is a Node.js library used to generate and verify HOTP and TOTP
+authentication codes. It has been widely used for implementing Google
+Authenticator-based 2FA solutions.
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+<h3>Features</h3>
+<ul>
+  <li>✅ TOTP Support</li>
+  <li>✅ HOTP Support</li>
+  <li>✅ Secret Generation</li>
+  <li>✅ OTP Verification</li>
+  <li>✅ Google Authenticator Compatibility</li>
+</ul>
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+<h3>Example</h3>
 
-## Project setup
+<pre><code>
+import * as speakeasy from 'speakeasy';
 
-```bash
-$ npm install
-```
+const secret = speakeasy.generateSecret();
 
-## Compile and run the project
+const verified = speakeasy.totp.verify({
+  secret: secret.base32,
+  encoding: 'base32',
+  token: '123456',
+});
+</code></pre>
 
-```bash
-# development
-$ npm run start
+<h3>Advantages</h3>
+<ul>
+  <li>Stable and mature library</li>
+  <li>Easy to implement</li>
+  <li>Supports both HOTP and TOTP</li>
+</ul>
 
-# watch mode
-$ npm run start:dev
+<h3>Limitations</h3>
+<ul>
+  <li>Less active maintenance</li>
+  <li>Older API design</li>
+  <li>Limited TypeScript support</li>
+</ul>
 
-# production mode
-$ npm run start:prod
-```
+<hr>
 
-## Run tests
+<h2>2️⃣ otplib</h2>
 
-```bash
-# unit tests
-$ npm run test
+<h3>Description</h3>
+<p>
+otplib is a modern OTP library for Node.js that supports TOTP and HOTP
+authentication. It offers better TypeScript support, cleaner APIs, and
+excellent integration with NestJS applications.
+</p>
 
-# e2e tests
-$ npm run test:e2e
+<h3>Features</h3>
+<ul>
+  <li>✅ TOTP Support</li>
+  <li>✅ HOTP Support</li>
+  <li>✅ Built-in Authenticator Module</li>
+  <li>✅ Google Authenticator Compatibility</li>
+  <li>✅ TypeScript Friendly</li>
+  <li>✅ Actively Maintained</li>
+</ul>
 
-# test coverage
-$ npm run test:cov
-```
+<h3>Example</h3>
 
-## Deployment
+<pre><code>
+import { authenticator } from 'otplib';
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+const secret = authenticator.generateSecret();
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+const verified = authenticator.verify({
+  token: '123456',
+  secret,
+});
+</code></pre>
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+<h3>Advantages</h3>
+<ul>
+  <li>Modern and clean API</li>
+  <li>Better TypeScript support</li>
+  <li>Actively maintained</li>
+  <li>Excellent NestJS integration</li>
+  <li>Simplified authenticator workflow</li>
+</ul>
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+<h3>Limitations</h3>
+<ul>
+  <li>Different API compared to older tutorials</li>
+</ul>
 
-## Resources
+<hr>
 
-Check out a few resources that may come in handy when working with NestJS:
+<h2>📊 Library Comparison</h2>
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <th>Feature</th>
+    <th>Speakeasy</th>
+    <th>otplib</th>
+  </tr>
+  <tr>
+    <td>TOTP Support</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td>HOTP Support</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+  <tr>
+    <td>TypeScript Support</td>
+    <td>Basic</td>
+    <td>Better</td>
+  </tr>
+  <tr>
+    <td>Active Maintenance</td>
+    <td>Less Active</td>
+    <td>More Active</td>
+  </tr>
+  <tr>
+    <td>Modern API</td>
+    <td>Older Style</td>
+    <td>Cleaner API</td>
+  </tr>
+  <tr>
+    <td>NestJS Integration</td>
+    <td>Good</td>
+    <td>Excellent</td>
+  </tr>
+  <tr>
+    <td>Authenticator Helpers</td>
+    <td>Limited</td>
+    <td>Built-in</td>
+  </tr>
+</table>
 
-## Support
+<hr>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+<h2>✅ Selected Library: otplib</h2>
 
-## Stay in touch
+<h3>Reason for Selection</h3>
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<ul>
+  <li>Better TypeScript support for NestJS applications</li>
+  <li>Cleaner and more maintainable API</li>
+  <li>More actively maintained</li>
+  <li>Built-in authenticator functionality</li>
+  <li>Better long-term scalability and support</li>
+</ul>
 
-## License
+<hr>
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+<h2>🔄 2FA Workflow Using otplib + qrcode</h2>
+
+<pre>
+User
+  │
+  ▼
+Enable 2FA
+  │
+  ▼
+Generate Secret (otplib)
+  │
+  ▼
+Create otpauth URL
+  │
+  ▼
+Generate QR Code (qrcode)
+  │
+  ▼
+Scan Using Authenticator App
+  │
+  ▼
+Store Secret on Device
+  │
+  ▼
+Generate OTP Every 30 Seconds
+  │
+  ▼
+Login Request
+  │
+  ▼
+Verify OTP (otplib)
+  │
+  ▼
+Generate JWT Token
+  │
+  ▼
+Access Granted
+</pre>
+
+<hr>
+
+<h2>🎯 Conclusion</h2>
+
+<p>
+After evaluating both libraries, <strong>otplib</strong> was selected for
+implementing TOTP-based Two-Factor Authentication (2FA) in the NestJS
+backend. The library provides better TypeScript support, a cleaner API,
+active maintenance, and excellent compatibility with modern NestJS
+applications. The <strong>qrcode</strong> package is used alongside otplib
+to generate QR codes that allow users to quickly configure authenticator
+applications such as Google Authenticator and Microsoft Authenticator.
+</p>
